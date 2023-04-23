@@ -1,3 +1,7 @@
+includes:
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/phpstan/phpstan-phpunit/rules.neon
+
 parameters:
   level: max
   paths:
@@ -5,3 +9,4 @@ parameters:
     - src
     - tests
   tipsOfTheDay: false
+  tmpDir: build

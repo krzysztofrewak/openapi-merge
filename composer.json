@@ -1,51 +1,74 @@
 {
-  "name": "marcelthole/openapi-merge",
+  "name": "krzysztofrewak/openapi-merge",
   "description": "Merge multiple OpenAPI YML/JSON files into one",
   "type": "application",
-  "keywords":[
-    "openapi", "merge"
+  "keywords": [
+    "openapi",
+    "merge"
   ],
   "license": "MIT",
   "authors": [
     {
       "name": "Marcel Thole",
       "role": "Creator"
+    },
+    {
+      "name": "Krzysztof Rewak",
+      "role": "Editor"
     }
   ],
   "require": {
     "php": "^7.4 || ^8.0",
-    "cebe/php-openapi": "^1.4.2"
+    "cebe/php-openapi": "^1.7.0",
+    "symfony/console": "^5.1.9 || ^6.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^9.4",
-    "phpstan/phpstan": "^0.12.51",
-    "doctrine/coding-standard": "^8.1"
+    "doctrine/coding-standard": "^9.0.0",
+    "infection/infection": "^0.20.0",
+    "phpstan/phpstan": "^0.12.85",
+    "phpstan/phpstan-phpunit": "^0.12.18",
+    "phpunit/phpunit": "^9.5.0",
+    "roave/security-advisories": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "OpenApiMerge\\": "src/"
+      "Mthole\\OpenApiMerge\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "OpenApiMerge\\Tests\\": "tests"
+      "Mthole\\OpenApiMerge\\Tests\\": "tests"
     }
   },
   "scripts": {
     "ci": [
-      "@cs-check",
       "@phpunit",
       "@phpstan"
     ],
-    "cs-check": "phpcs",
-    "cs-fix": "phpcbf",
-    "phpunit": "phpunit --colors=always",
-    "phpunit-coverage": "phpunit --colors=always --coverage-clover clover.xml",
-    "phpstan": "phpstan analyse"
+    "ci-coverage": [
+      "@phpunit-coverage",
+      "@infection"
+    ],
+    "cs-check": [
+      "phpcs --config-set php_version 70423",
+      "phpcs -s"
+    ],
+    "cs-fix": [
+      "phpcs --config-set php_version 70423",
+      "phpcbf"
+    ],
+    "phpunit": "@php -dzend.assertions=1 ./vendor/bin/phpunit --no-coverage",
+    "phpunit-coverage": "@php -dxdebug.mode=coverage -dzend.assertions=1 ./vendor/bin/phpunit",
+    "phpstan": "phpstan analyse",
+    "infection": "infection --threads=4 --coverage=build/coverage"
   },
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "infection/extension-installer": true,
+      "ocramius/package-versions": true
+    }
   },
   "bin": [
     "bin/openapi-merge"

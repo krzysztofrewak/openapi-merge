@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace OpenApiMerge\Tests\FileHandling;
+namespace Mthole\OpenApiMerge\Tests\FileHandling;
 
-use Generator;
-use OpenApiMerge\FileHandling\Exception\IOException;
-use OpenApiMerge\FileHandling\File;
+use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
+use Mthole\OpenApiMerge\FileHandling\File;
 use PHPUnit\Framework\TestCase;
 
 use function getcwd;
+use function preg_quote;
 use function str_replace;
 
 /**
- * @covers \OpenApiMerge\FileHandling\File
+ * @uses   \Mthole\OpenApiMerge\FileHandling\Exception\IOException
+ *
+ * @covers \Mthole\OpenApiMerge\FileHandling\File
  */
 class FileTest extends TestCase
 {
@@ -26,8 +28,8 @@ class FileTest extends TestCase
         self::assertSame($expectedExtension, $sut->getFileExtension());
     }
 
-    /** @return Generator<array<int, string>> */
-    public function fileExtensionProvider(): Generator
+    /** @return list<list<string>> */
+    public function fileExtensionProvider(): iterable
     {
         yield ['base.yml', 'yml'];
         yield ['base.yaml', 'yaml'];
@@ -37,28 +39,28 @@ class FileTest extends TestCase
         yield ['./../file.dat', 'dat'];
     }
 
-    public function testGetAbsolutePathWithRelativeInvalidFile(): void
+    public function testGetAbsoluteFileWithRelativeInvalidFile(): void
     {
         $sut = new File('dummyfile');
 
         $this->expectException(IOException::class);
-        $this->expectExceptionMessageMatches('~/dummyfile~');
+        $this->expectExceptionMessageMatches('~\w+/dummyfile"~');
 
-        $sut->getAbsolutePath();
+        $sut->getAbsoluteFile();
     }
 
-    public function testGetAbsolutePathWithAbsoluteInvalidFile(): void
+    public function testGetAbsoluteFileWithAbsoluteInvalidFile(): void
     {
         $invalidFilename = __FILE__ . '-nonexisting.dat';
         $sut             = new File($invalidFilename);
 
         $this->expectException(IOException::class);
-        $this->expectExceptionMessageMatches('~' . $invalidFilename . '~');
+        $this->expectExceptionMessageMatches('~"' . preg_quote($invalidFilename, '~') . '"~');
 
-        $sut->getAbsolutePath();
+        $sut->getAbsoluteFile();
     }
 
-    public function testGetAbsolutePath(): void
+    public function testGetAbsoluteFile(): void
     {
         $filename = str_replace(
             getcwd() ?: '',
@@ -74,7 +76,13 @@ class FileTest extends TestCase
         $sut = new File($filename);
         self::assertSame(
             __FILE__,
-            $sut->getAbsolutePath()
+            $sut->getAbsoluteFile()
         );
+    }
+
+    public function testGetAbsolutePath(): void
+    {
+        $sut = new File(__FILE__);
+        self::assertSame(__DIR__, $sut->getAbsolutePath());
     }
 }
