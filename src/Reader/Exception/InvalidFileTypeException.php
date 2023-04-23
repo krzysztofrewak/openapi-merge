@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\Reader\Exception;
+namespace KrzysztofRewak\OpenApiMerge\Reader\Exception;
 
 use Exception;
 
@@ -14,8 +14,8 @@ class InvalidFileTypeException extends Exception
 
     public static function createFromExtension(string $fileExtension): self
     {
-        $exception                = new self(
-            sprintf('Given file has an unsupported file extension "%s"', $fileExtension)
+        $exception = new self(
+            sprintf('Given file has an unsupported file extension "%s"', $fileExtension),
         );
         $exception->fileExtension = $fileExtension;
 

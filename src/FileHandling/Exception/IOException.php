@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\FileHandling\Exception;
+namespace KrzysztofRewak\OpenApiMerge\FileHandling\Exception;
 
 use Exception;
 
@@ -14,8 +14,8 @@ class IOException extends Exception
 
     public static function createWithNonExistingFile(string $filename): self
     {
-        $exception           = new IOException(
-            sprintf('Given file "%s" was not found', $filename)
+        $exception = new self(
+            sprintf('Given file "%s" was not found', $filename),
         );
         $exception->filename = $filename;
 

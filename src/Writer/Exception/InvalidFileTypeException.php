@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\Writer\Exception;
+namespace KrzysztofRewak\OpenApiMerge\Writer\Exception;
 
 use Exception;
 
@@ -14,8 +14,8 @@ class InvalidFileTypeException extends Exception
 
     public static function createFromExtension(string $fileExtension): self
     {
-        $exception                = new self(
-            sprintf('The filetype "%s" is not supported for dumping', $fileExtension)
+        $exception = new self(
+            sprintf('The filetype "%s" is not supported for dumping', $fileExtension),
         );
         $exception->fileExtension = $fileExtension;
 

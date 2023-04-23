@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\Writer;
+namespace KrzysztofRewak\OpenApiMerge\Writer;
 
 use cebe\openapi\Writer;
-use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
-use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
+use KrzysztofRewak\OpenApiMerge\FileHandling\SpecificationFile;
+use KrzysztofRewak\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
 
-final class DefinitionWriter implements DefinitionWriterInterface
+final class DefinitionWriter
 {
     public function write(SpecificationFile $specFile): string
     {
         switch ($specFile->getFile()->getFileExtension()) {
-            case 'json':
+            case "json":
                 return $this->writeToJson($specFile);
 
-            case 'yml':
-            case 'yaml':
+            case "yml":
+            case "yaml":
                 return $this->writeToYaml($specFile);
 
             default:
@@ -27,11 +27,11 @@ final class DefinitionWriter implements DefinitionWriterInterface
 
     public function writeToJson(SpecificationFile $specFile): string
     {
-        return Writer::writeToJson($specFile->getOpenApi());
+        return Writer::writeToJson($specFile->getOpenApiSpecificationObject());
     }
 
     public function writeToYaml(SpecificationFile $specFile): string
     {
-        return Writer::writeToYaml($specFile->getOpenApi());
+        return Writer::writeToYaml($specFile->getOpenApiSpecificationObject());
     }
 }

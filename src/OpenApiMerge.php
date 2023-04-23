@@ -2,80 +2,47 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge;
-
-use cebe\openapi\spec\Components;
-use Mthole\OpenApiMerge\FileHandling\File;
-use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
-use Mthole\OpenApiMerge\Merge\PathMergerInterface;
-use Mthole\OpenApiMerge\Merge\ReferenceNormalizer;
-use Mthole\OpenApiMerge\Reader\FileReader;
+namespace KrzysztofRewak\OpenApiMerge;
 
 use function array_merge;
-use function array_push;
-use function count;
+use function assert;
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Paths;
+use KrzysztofRewak\OpenApiMerge\FileHandling\File;
 
-class OpenApiMerge implements OpenApiMergeInterface
+use KrzysztofRewak\OpenApiMerge\FileHandling\SpecificationFile;
+use KrzysztofRewak\OpenApiMerge\Reader\FileReader;
+
+class OpenApiMerge
 {
-    private FileReader $openApiReader;
-
-    private PathMergerInterface $pathMerger;
-    private ReferenceNormalizer $referenceNormalizer;
-
     public function __construct(
-        FileReader $openApiReader,
-        PathMergerInterface $pathMerger,
-        ReferenceNormalizer $referenceResolver
-    ) {
-        $this->openApiReader       = $openApiReader;
-        $this->pathMerger          = $pathMerger;
-        $this->referenceNormalizer = $referenceResolver;
-    }
+        private FileReader $openApiReader,
+    ) {}
 
-    /** @param list<File> $additionalFiles */
-    public function mergeFiles(File $baseFile, array $additionalFiles, bool $resolveReference = true): SpecificationFile
+    public function mergeFiles(File $baseFile, File ...$additionalFiles): SpecificationFile
     {
-        $mergedOpenApiDefinition = $this->openApiReader->readFile($baseFile, $resolveReference)->getOpenApi();
+        $mergedOpenApiDefinition = $this->openApiReader->readFile($baseFile)->getOpenApiSpecificationObject();
+        assert($mergedOpenApiDefinition instanceof OpenApi);
 
-        // use "for" instead of "foreach" to iterate over new added files
-        for ($i = 0; $i < count($additionalFiles); $i++) {
-            $additionalFile       = $additionalFiles[$i];
-            $additionalDefinition = $this->openApiReader->readFile($additionalFile, $resolveReference)->getOpenApi();
-            if (! $resolveReference) {
-                $resolvedReferenceResult = $this->referenceNormalizer->normalizeInlineReferences(
-                    $additionalFile,
-                    $additionalDefinition
-                );
-                array_push($additionalFiles, ...$resolvedReferenceResult->getFoundReferenceFiles());
-                $additionalDefinition = $resolvedReferenceResult->getNormalizedDefinition();
-            }
+        foreach ($additionalFiles as $additionalFile) {
+            $additionalDefinition = $this->openApiReader->readFile($additionalFile)->getOpenApiSpecificationObject();
+            assert($additionalDefinition instanceof OpenApi);
 
-            $mergedOpenApiDefinition->paths = $this->pathMerger->mergePaths(
-                $mergedOpenApiDefinition->paths,
-                $additionalDefinition->paths
-            );
-
-            if ($additionalDefinition->components === null) {
-                continue;
-            }
-
-            if ($mergedOpenApiDefinition->components === null) {
-                $mergedOpenApiDefinition->components = new Components([]);
-            }
-
-            $mergedOpenApiDefinition->components->schemas = array_merge(
-                $mergedOpenApiDefinition->components->schemas ?? [],
-                $additionalDefinition->components->schemas ?? []
+            $mergedOpenApiDefinition->paths = new Paths(
+                array_merge(
+                    $mergedOpenApiDefinition?->paths->getPaths() ?? [],
+                    $additionalDefinition?->paths->getPaths() ?? [],
+                ),
             );
         }
 
-        if ($resolveReference && $mergedOpenApiDefinition->components !== null) {
+        if ($mergedOpenApiDefinition->components !== null) {
             $mergedOpenApiDefinition->components->schemas = [];
         }
 
         return new SpecificationFile(
             $baseFile,
-            $mergedOpenApiDefinition
+            $mergedOpenApiDefinition,
         );
     }
 }

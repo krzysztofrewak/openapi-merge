@@ -15,7 +15,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/pingResponse'
+                type: object
+                properties:
+                  response:
+                    type: string
+                required:
+                  - response
         '400':
           description: Bad Request
           content:
@@ -32,16 +37,6 @@ paths:
           in: query
           name: responseWith
           description: response with this message
-
-components:
-  schemas:
-    pingResponse:
-      type: object
-      properties:
-        response:
-          type: string
-      required:
-        - response
 tags:
   - name: Route
   - name: Base Route

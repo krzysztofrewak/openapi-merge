@@ -18,59 +18,31 @@
     }
   ],
   "require": {
-    "php": "^7.4 || ^8.0",
-    "cebe/php-openapi": "^1.7.0",
-    "symfony/console": "^5.1.9 || ^6.0"
+    "php": "^8.2",
+    "cebe/php-openapi": "^1.7",
+    "symfony/console": "^6.0"
   },
   "require-dev": {
-    "doctrine/coding-standard": "^9.0.0",
-    "infection/infection": "^0.20.0",
-    "phpstan/phpstan": "^0.12.85",
-    "phpstan/phpstan-phpunit": "^0.12.18",
-    "phpunit/phpunit": "^9.5.0",
+    "blumilksoftware/codestyle": "^1.2",
+    "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-master"
   },
   "autoload": {
     "psr-4": {
-      "Mthole\\OpenApiMerge\\": "src/"
+      "KrzysztofRewak\\OpenApiMerge\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Mthole\\OpenApiMerge\\Tests\\": "tests"
+      "KrzysztofRewak\\OpenApiMerge\\Tests\\": "tests"
     }
   },
   "scripts": {
-    "ci": [
-      "@phpunit",
-      "@phpstan"
-    ],
-    "ci-coverage": [
-      "@phpunit-coverage",
-      "@infection"
-    ],
-    "cs-check": [
-      "phpcs --config-set php_version 70423",
-      "phpcs -s"
-    ],
-    "cs-fix": [
-      "phpcs --config-set php_version 70423",
-      "phpcbf"
-    ],
-    "phpunit": "@php -dzend.assertions=1 ./vendor/bin/phpunit --no-coverage",
-    "phpunit-coverage": "@php -dxdebug.mode=coverage -dzend.assertions=1 ./vendor/bin/phpunit",
-    "phpstan": "phpstan analyse",
-    "infection": "infection --threads=4 --coverage=build/coverage"
+    "cs": "./vendor/bin/php-cs-fixer fix --dry-run --diff --config codestyle.php",
+    "csf": "./vendor/bin/php-cs-fixer fix --diff --config codestyle.php",
+    "test": "./vendor/bin/phpunit tests --colors always"
   },
   "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
-      "infection/extension-installer": true,
-      "ocramius/package-versions": true
-    }
-  },
-  "bin": [
-    "bin/openapi-merge"
-  ]
+    "sort-packages": true
+  }
 }

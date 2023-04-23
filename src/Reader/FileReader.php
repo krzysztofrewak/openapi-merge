@@ -2,39 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\Reader;
+namespace KrzysztofRewak\OpenApiMerge\Reader;
 
-use cebe\openapi\spec\OpenApi;
-use Mthole\OpenApiMerge\FileHandling\File;
-use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
-use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
+use cebe\openapi\Reader;
+use KrzysztofRewak\OpenApiMerge\FileHandling\File;
+use KrzysztofRewak\OpenApiMerge\FileHandling\SpecificationFile;
+use KrzysztofRewak\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 
 final class FileReader
 {
-    private OpenApiReaderWrapper $openApiReader;
-
-    public function __construct(?OpenApiReaderWrapper $openApiReader = null)
-    {
-        $this->openApiReader = $openApiReader ?? new OpenApiReaderWrapper();
-    }
-
-    public function readFile(File $inputFile, bool $resolveReferences = true): SpecificationFile
+    public function readFile(File $inputFile): SpecificationFile
     {
         switch ($inputFile->getFileExtension()) {
-            case 'yml':
-            case 'yaml':
-                $spec = $this->openApiReader->readFromYamlFile(
-                    $inputFile->getAbsoluteFile(),
-                    OpenApi::class,
-                    $resolveReferences
-                );
+            case "yml":
+            case "yaml":
+                $spec = Reader::readFromYamlFile($inputFile->getAbsolutePath());
                 break;
-            case 'json':
-                $spec = $this->openApiReader->readFromJsonFile(
-                    $inputFile->getAbsoluteFile(),
-                    OpenApi::class,
-                    $resolveReferences
-                );
+            case "json":
+                $spec = Reader::readFromJsonFile($inputFile->getAbsolutePath());
                 break;
             default:
                 throw InvalidFileTypeException::createFromExtension($inputFile->getFileExtension());
@@ -42,7 +27,7 @@ final class FileReader
 
         return new SpecificationFile(
             $inputFile,
-            $spec
+            $spec,
         );
     }
 }

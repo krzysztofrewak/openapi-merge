@@ -2,29 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Mthole\OpenApiMerge\FileHandling;
+namespace KrzysztofRewak\OpenApiMerge\FileHandling;
 
-use cebe\openapi\spec\OpenApi;
+use cebe\openapi\SpecObjectInterface;
 
 final class SpecificationFile
 {
-    private File $file;
-
-    private OpenApi $openApi;
-
-    public function __construct(File $filename, OpenApi $openApiSpecificationObject)
-    {
-        $this->file    = $filename;
-        $this->openApi = $openApiSpecificationObject;
-    }
+    public function __construct(
+        private File $file,
+        private SpecObjectInterface $openApiSpecificationObject,
+    ) {}
 
     public function getFile(): File
     {
         return $this->file;
     }
 
-    public function getOpenApi(): OpenApi
+    public function getOpenApiSpecificationObject(): SpecObjectInterface
     {
-        return $this->openApi;
+        return $this->openApiSpecificationObject;
     }
 }
