@@ -30,8 +30,8 @@ class OpenApiMerge
 
             $mergedOpenApiDefinition->paths = new Paths(
                 array_merge(
-                    $mergedOpenApiDefinition?->paths->getPaths() ?? [],
-                    $additionalDefinition?->paths->getPaths() ?? [],
+                    $mergedOpenApiDefinition->paths?->getPaths() ?? [],
+                    $additionalDefinition->paths?->getPaths() ?? [],
                 ),
             );
         }
