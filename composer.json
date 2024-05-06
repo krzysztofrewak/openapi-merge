@@ -20,7 +20,7 @@
   "require": {
     "php": "^8.2",
     "devizzent/cebe-php-openapi": "^1.0",
-    "symfony/console": "^6.0"
+    "symfony/console": "^6.0|^7.0"
   },
   "require-dev": {
     "blumilksoftware/codestyle": "^1.2",
